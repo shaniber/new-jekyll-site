@@ -5,6 +5,11 @@
 #
 # This script will create a blank Jekyll site with my preferred layout.
 
+SITE_PATH=${SITE_PATH-"${HOME}/Work"}
+SITE_NAME=${SITE_NAME-"testing-jekyll"}
+SITE_TYPE=${SITE_TYPE-"jekyll"}
+SCRIPT_PATH=$(pwd)
+
 ## Set to 1 to enable debugging
 DEBUG=${DEBUG-0}
 if [ "${DEBUG}" = 1 ] ; then
@@ -52,13 +57,23 @@ function util::confirm_requirements() {
   fi
 
   ## Check for Jekyll installation.
-  util::debug "Checking if Jekyll is installed"
-  if ! command -v jekyll 2>&1 > /dev/null ; then
-    util::error "Jekyll is not installed on your system. Bailing out!"
+#  util::debug "Checking if Jekyll is installed"
+#  if ! command -v jekyll 2>&1 > /dev/null ; then
+#    util::error "Jekyll is not installed on your system. Bailing out!"
+#    exit 220
+#  else 
+#    util::debug "Jekyll is installed."
+#  fi
+
+  ## Check for Ruby installation.
+  util::debug "Checking if Ruby is installed"
+  if ! command -v ruby 2>&1 > /dev/null ; then
+    util::error "Ruby is not installed on your system. Bailing out!"
     exit 220
   else 
-    util::debug "Jekyll is installed."
+    util::debug "Ruby is installed."
   fi
+
 
   ## Check for Bundler installation
   util::debug "Checking if Bundler is installed"
@@ -74,24 +89,31 @@ function util::confirm_requirements() {
 
 util::confirm_requirements
 
-site_name=testing
-site_type=jekyll
+#site_name=testing
+#site_type=jekyll
 
 # Check for site name, as for one if not supplied on the command line.
 # Check if this is a github pages site if not supplied on the command line.
 # If the user isn't Shane, ask for name and email, otherwise set to the usual.
 
 # Initialize a new site.
-jekyll new ${site_name} --blank
+#jekyll new ${site_name} --blank
+
+# Create a site directory.
+mkdir "${SITE_PATH}/${SITE_NAME}"
 
 # Change into the site's directory
-cd ${site_name}
+cd "${SITE_PATH}/${SITE_NAME}"
 
 # Initialize bundler
 bundle init
+bundle config set --local path 'vendor/bundle'
 
 # Add either Jekyll or GitHub-Pages gems.
-bundle add ${site_type}
+bundle add ${SITE_TYPE}
+
+# Initialize a blank Jekyll site.
+bundle exec jekyll new --force --skip-bundle --blank .
 
 # Create the src directory
 mkdir src
@@ -119,6 +141,7 @@ _.sass-cache
 Gemfile.lock
 *.sw*
 ======
+vendor/
 _site/
 .sass-cache/
 .jekyll-cache/
@@ -126,7 +149,7 @@ _site/
 EOF
 
 # Copy in the handy-dandy Makefile.
-cp ../Makefile .
+cp ${SCRIPT_PATH}/Makefile .
 
 # Update the Makefile with the site name.
 sed -i.bak "s/REPLACEME/${site_name}/g" Makefile
@@ -136,8 +159,8 @@ find . -name "*.bak" -exec rm {} \;
 
 # Initialize a git repo, add the user and email to the config, and commit everything.
 git init
-git config set user.name "Shane Doucette"
-git config set user.email "shaniber@gmail.com"
+git config --add user.name "shane doucette"
+git config --add user.email "shaniber@gmail.com"
 git add .
 git commit -m "Initial commit" 
 
