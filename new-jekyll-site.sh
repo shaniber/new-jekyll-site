@@ -157,4 +157,4 @@ git config --add user.email "${USER_EMAIL}"
 git add .
 git commit -m "Initial commit" 
 
-util::print "Done!"
+util::print "\nDone!\n\n"
