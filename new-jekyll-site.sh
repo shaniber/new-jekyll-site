@@ -5,10 +5,14 @@
 #
 # This script will create a blank Jekyll site with my preferred layout.
 
+SCRIPT_PATH=$(pwd)
+
+USER_NAME="shane doucette"
+USER_EMAIL="shaniber@gmail.com"
+
 SITE_PATH=${SITE_PATH-"${HOME}/Work"}
 SITE_NAME=${SITE_NAME-"testing-jekyll"}
 SITE_TYPE=${SITE_TYPE-"jekyll"}
-SCRIPT_PATH=$(pwd)
 
 ## Set to 1 to enable debugging
 DEBUG=${DEBUG-0}
@@ -117,7 +121,7 @@ source: "src/"
 EOF
 
 # Update _config.yml with the site name.
-sed -i.bak "s/title: \"\"/title: \"${site_name} site\"/g" _config.yml
+sed -i.bak "s/title: \"\"/title: \"${SITE_NAME} site\"/g" _config.yml
 
 # Create a .gitignore.
 cat <<EOF > .gitignore
@@ -141,15 +145,15 @@ EOF
 cp ${SCRIPT_PATH}/Makefile .
 
 # Update the Makefile with the site name.
-sed -i.bak "s/REPLACEME/${site_name}/g" Makefile
+sed -i.bak "s/REPLACEME/${SITE_NAME}/g" Makefile
 
 # Remove any backup files we created.
 find . -name "*.bak" -exec rm {} \;
 
 # Initialize a git repo, add the user and email to the config, and commit everything.
 git init
-git config --add user.name "shane doucette"
-git config --add user.email "shaniber@gmail.com"
+git config --add user.name "${USER_NAME}"
+git config --add user.email "${USER_EMAIL}"
 git add .
 git commit -m "Initial commit" 
 
